@@ -1,0 +1,13 @@
+package com.exposer;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class ExposerApiApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
