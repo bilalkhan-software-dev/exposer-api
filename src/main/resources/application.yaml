@@ -1,3 +1,105 @@
 spring:
   application:
     name: exposer-api
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+
+server:
+  port: ${PORT:8081}
+
+
+frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+api:
+  base:
+    url: ${BASE_URL:http://localhost:8081}
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY:6pQm/8nXkz1uD0mU5wXrZ4qV9rG7dJk8aLfP9nQw1yZ2xThB9cN4qR5vY7uK3mP0}
+
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      auto-index-creation: true
+  mongodb:
+    uri: ${MONGODB_URL:mongodb://admin:password123@localhost:27017/exposer-db?authSource=admin}
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 587
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      auto-index-creation: true
+  mongodb:
+    uri: ${MONGODB_URL}
+  mail:
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: ${EMAIL_PORT:587}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID_PROD:}
+            client-secret: ${GOOGLE_CLIENT_SECRET_PROD:}
+            scope:
+              - email
+              - profile
+            redirect-uri: "${api.base.url}/login/oauth2/code/google"
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=1h
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
