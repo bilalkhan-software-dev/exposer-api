@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 @Getter
@@ -13,19 +14,23 @@ import java.util.LinkedHashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GenericResponse {
+public class GenericResponse<T> {
 
     private HttpStatus httpStatus;
-    private Object data;
+    private T data;
     private String message;
     private String status;
 
-    public ResponseEntity<?> create() {
+    @Builder.Default
+    private Long timestamp = System.currentTimeMillis();
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    public ResponseEntity<Map<String,Object>> create() {
+
+        Map<String, Object> map = new LinkedHashMap<>();
 
         map.put("status", status);
         map.put("message", message);
+        map.put("timestamp", timestamp);
 
         if (!ObjectUtils.isEmpty(data)) {
             map.put("data", data);
