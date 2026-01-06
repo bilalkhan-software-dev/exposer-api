@@ -17,7 +17,7 @@ api:
 
 jwt:
   secret:
-    key: ${JWT_SECRET_KEY:6pQm/8nXkz1uD0mU5wXrZ4qV9rG7dJk8aLfP9nQw1yZ2xThB9cN4qR5vY7uK3mP0}
+    key: ${JWT_SECRET_KEY}
 
 
 
@@ -26,6 +26,9 @@ spring:
   config:
     activate:
       on-profile: dev
+  threads:
+    virtual:
+      enabled: true
   data:
     mongodb:
       auto-index-creation: true
@@ -39,6 +42,10 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=1h
   security:
     oauth2:
       client:

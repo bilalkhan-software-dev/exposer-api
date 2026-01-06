@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +24,8 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    public void sendEmail(SendNotificationEvent emailMessage) throws MessagingException, UnsupportedEncodingException {
+    @Async
+    public void sendEmail(SendNotificationEvent emailMessage) throws UnsupportedEncodingException {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
@@ -35,7 +37,7 @@ public class EmailService {
             log.info("Email sent to {} eventType: {}", emailMessage.to(), emailMessage.eventType());
         } catch (MessagingException e) {
             log.error("Mail send failed: body: {} : stackTrace{}", emailMessage.body(), e.getMessage());
-            throw new MailSendException("Failed to send mail eventType+" + emailMessage.eventType() + ". Please try again later.");
+            throw new MailSendException("Failed to send mail " + e.getMessage() + ". Please try again later.");
         }
     }
 }

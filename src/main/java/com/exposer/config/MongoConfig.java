@@ -11,25 +11,24 @@ import java.util.Optional;
 
 @Configuration
 @EnableMongoAuditing
-public class MongoAuditing implements AuditorAware<String> {
+public class MongoConfig implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Optional.of("anonymous");
-        }
+        if (authentication == null || !authentication.isAuthenticated()) return Optional.of("system");
+
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof UserDetails) {
-            return Optional.of(((UserDetails) principal).getUsername());
-        } else if (principal instanceof String) {
-            return Optional.of((String) principal);
+        if (principal instanceof UserDetails userDetails) {
+            return Optional.of((userDetails.getUsername()));
         }
 
         return Optional.of("system");
     }
 }
+
 
