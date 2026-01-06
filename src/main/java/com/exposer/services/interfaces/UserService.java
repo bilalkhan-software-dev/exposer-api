@@ -12,6 +12,8 @@ public interface UserService {
 
     UserResponse updateProfile(String token, ProfileUpdateRequest profileUpdateRequest);
 
+    void deleteUser(String username);
+
     PagedResponse<UserResponse> getUsers(int page, int size, boolean isNewest);
 
 }

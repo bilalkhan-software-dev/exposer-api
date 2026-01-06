@@ -49,6 +49,16 @@ public class UserController {
 
     }
 
+    @DeleteMapping("/{username}")
+    @PreAuthorize(ONLY_ADMIN)
+    public ResponseEntity<Map<String, Object>> deleteUser(@NotBlank(message = "Username is required") @PathVariable String username) {
+
+        userService.deleteUser(username);
+
+        return GenericResponseHandler.createBuildResponseMessage("User deleted successfully by username: " + username, HttpStatus.OK);
+
+    }
+
     @PatchMapping
     public ResponseEntity<Map<String, Object>> updateProfile(@RequestHeader(AUTHORIZATION_HEADER) String token, @Valid @RequestBody ProfileUpdateRequest request) {
 

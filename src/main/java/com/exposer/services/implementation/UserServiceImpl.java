@@ -65,6 +65,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUser(String username) {
+        log.info("Deleting user details by username");
+        boolean exists = userDao.existsByUsername(username);
+        if (!exists) {
+            log.info("User not found with username: {}", username);
+            throw new ResourceNotFoundException("No user found with username: " + username);
+        }
+        userDao.deleteByUsername(username);
+        log.info("User details deleted successfully");
+    }
+
+    @Override
     public PagedResponse<UserResponse> getUsers(int page, int size, boolean isNewest) {
         log.info("Fetching all users");
         Page<User> users = userDao.findByUsers(page, size, isNewest);
@@ -72,5 +84,6 @@ public class UserServiceImpl implements UserService {
         log.info(users.getTotalElements() == 0 ? "No users available in our record" : "Users fetched successfully");
         return CommonUtil.buildPagedResponse(users, UserMapper::toUserResponse);
     }
+
 
 }

@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -40,7 +41,8 @@ public class User extends AbstractEntity implements UserDetails {
     private String profilePic;
 
     @Indexed(unique = true)
-    private String providerId;
+    @Builder.Default
+    private String providerId = UUID.randomUUID().toString();
 
     @Builder.Default
     private String providerType = AuthProviderType.SELF.name();

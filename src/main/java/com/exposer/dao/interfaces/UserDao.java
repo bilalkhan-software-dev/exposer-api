@@ -31,4 +31,7 @@ public interface UserDao {
     Optional<User> findByEmailAndVerificationToken(String email, String verificationToken);
 
     Page<User> findByUsers(int page, int size, boolean isNewest);
+
+    void deleteByUsername(String username);
+
 }

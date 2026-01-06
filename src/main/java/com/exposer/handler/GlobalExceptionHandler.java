@@ -3,7 +3,6 @@ package com.exposer.handler;
 import com.exposer.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +20,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.exposer.constants.ErrorMessage.INVALID_USERNAME_PASSWORD;
+import static com.exposer.constants.ErrorMessage.ACCESS_DENIED;
 
 @RestControllerAdvice
 @Slf4j
@@ -123,7 +125,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(BadCredentialsException ex) {
         log.warn("Bad Credential : {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        return GenericResponseHandler.createErrorResponseMessage(INVALID_USERNAME_PASSWORD, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -141,7 +143,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("Access Denied Exception : {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.FORBIDDEN);
+        return GenericResponseHandler.createErrorResponseMessage(ACCESS_DENIED, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)

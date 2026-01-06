@@ -139,20 +139,20 @@ public class AuthUtils {
     public User getUserFromToken(String jwt) {
         log.info("Getting user from token: {}", jwt);
 
-        String email = getUsernameFromToken(jwt);
-        log.info("Extracted email: {}", email);
+        String username = getUsernameFromToken(jwt);
+        log.info("Extracted username: {}", username);
 
 
-        Optional<User> userOptional = userDao.findByEmail(email);
+        Optional<User> userOptional = userDao.findByUsername(username);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            log.info("User found: ID={}, Email={}, Name={}",
+            log.info("User found: ID={}, Username={}, Name={}",
                     user.getId(), user.getEmail(), user.getFullName());
             return user;
         } else {
-            log.error("No user found for email: {}", email);
-            throw new ResourceNotFoundException("User not found for email: " + email);
+            log.error("No user found for username: {}", username);
+            throw new ResourceNotFoundException("User not found for username: " + username);
         }
     }
 }

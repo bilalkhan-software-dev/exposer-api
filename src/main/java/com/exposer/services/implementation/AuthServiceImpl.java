@@ -59,6 +59,7 @@ class AuthServiceImpl implements AuthService {
         log.debug("Generated verification token for user: {}", request.getEmail());
 
         User user = User.builder()
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountStatus(AccountStatus.UNVERIFIED)
