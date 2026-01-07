@@ -2,6 +2,7 @@ package com.exposer.utils;
 
 import com.exposer.models.dto.response.PagedResponse;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,10 +11,8 @@ import org.springframework.data.domain.Sort;
 import java.util.UUID;
 import java.util.function.Function;
 
+@UtilityClass
 public class CommonUtil {
-
-    private CommonUtil() {
-    }
 
     public static String getVerificationLink(String baseUrl, String email, String verificationToken) {
         return baseUrl + "/api/v1/auth/verify-email?email=" + email + "&token=" + verificationToken;

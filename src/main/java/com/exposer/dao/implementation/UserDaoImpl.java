@@ -5,14 +5,13 @@ import com.exposer.dao.repository.UserRepository;
 import com.exposer.models.entity.User;
 import com.exposer.utils.CommonUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 class UserDaoImpl implements UserDao {
@@ -21,14 +20,7 @@ class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByUsernameOrEmail(String username) {
-        Optional<User> byUsernameOrEmail = userRepository.findByUsernameOrEmail(username);
-        if (byUsernameOrEmail.isPresent()) {
-            log.info("User found: {}", byUsernameOrEmail.get());
-            return byUsernameOrEmail;
-        }
-        log.info("User not found");
-        return Optional.empty();
-
+        return userRepository.findByUsernameOrEmail(username);
     }
 
     @Override

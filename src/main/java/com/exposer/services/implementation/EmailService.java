@@ -1,6 +1,7 @@
-package com.exposer.services;
+package com.exposer.services.implementation;
 
 import com.exposer.models.dto.SendNotificationEvent;
+import com.exposer.services.interfaces.Notification;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,30 +15,32 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EmailService {
+public class EmailService implements Notification {
+
     private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String sender;
 
+
+    @Override
     @Async
-    public void sendEmail(SendNotificationEvent emailMessage) throws UnsupportedEncodingException {
+    public void notify(SendNotificationEvent event) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-            helper.setTo(emailMessage.to());
-            helper.setSubject(emailMessage.subject());
+            helper.setTo(event.to());
+            helper.setSubject(event.subject());
             helper.setFrom(sender, "Exposer (Do not reply)");
-            helper.setText(emailMessage.body(), true);
+            helper.setText(event.body(), true);
             javaMailSender.send(mimeMessage);
-            log.info("Email sent to {} eventType: {}", emailMessage.to(), emailMessage.eventType());
-        } catch (MessagingException e) {
-            log.error("Mail send failed: body: {} : stackTrace{}", emailMessage.body(), e.getMessage());
-            throw new MailSendException("Failed to send mail " + e.getMessage() + ". Please try again later.");
+            log.info("Email sent to {} eventType: {}", event.to(), event.eventType());
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Mail send failed: body: {} : stackTrace{}", event.body(), e.getMessage());
+            throw new MailSendException("Failed to send mail. Please try again later.");
         }
     }
 }

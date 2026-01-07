@@ -9,7 +9,7 @@ server:
 
 
 frontend:
-    url: ${FRONTEND_URL:http://localhost:5173}
+  url: ${FRONTEND_URL:http://localhost:5173}
 
 api:
   base:
@@ -66,6 +66,13 @@ management:
     health:
       show-details: always
 
+admin:
+  info:
+    username: ${ADMIN_USERNAME}
+    email: ${ADMIN_EMAIL}
+    fullName: ${ADMIN_FULLNAME}
+    password: ${ADMIN_PASSWORD}
+
 ---
 spring:
   config:
@@ -110,3 +117,10 @@ management:
   endpoint:
     health:
       show-details: always
+
+admin:
+  info:
+    username: ${ADMIN_USERNAME}
+    email: ${ADMIN_EMAIL}
+    fullName: ${ADMIN_FULLNAME}
+    password: ${ADMIN_PASSWORD}
