@@ -10,7 +10,7 @@ target/
 *.iml
 *.ipr
 
-.env
+*.env
 
 ### VS Code ###
 .vscode/
