@@ -152,6 +152,7 @@ class AuthServiceImpl implements AuthService {
                     .email(email)
                     .fullName(fullName)
                     .profilePic(profilePic)
+                    .emailVerifiedAt(Instant.now())
                     .providerId(providerId)
                     .providerType(providerType.name())
                     .accountStatus(AccountStatus.VERIFIED)

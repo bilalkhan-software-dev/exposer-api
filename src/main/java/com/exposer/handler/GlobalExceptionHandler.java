@@ -3,7 +3,6 @@ package com.exposer.handler;
 import com.exposer.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -11,6 +10,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -104,6 +104,13 @@ public class GlobalExceptionHandler {
         log.warn("Authentication Exception: {}", ex.getMessage());
         return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(OAuth2AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleOAuth2AuthenticationException(OAuth2AuthenticationException ex) {
+        log.warn("OAuth2 Authentication Exception: {}", ex.getMessage());
+        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<Map<String, Object>> handleMissingParameter(MissingServletRequestParameterException ex) {
