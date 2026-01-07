@@ -10,7 +10,6 @@ import com.exposer.models.dto.response.AuthResponse;
 import com.exposer.models.entity.User;
 import com.exposer.models.entity.enums.AccountStatus;
 import com.exposer.models.entity.enums.AuthProviderType;
-import com.exposer.services.EmailService;
 import com.exposer.services.interfaces.AuthService;
 import com.exposer.templates.EmailSendingTemplates;
 import com.exposer.utils.AuthUtils;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +26,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -235,14 +232,11 @@ class AuthServiceImpl implements AuthService {
     }
 
     private void sendEmailNotification(String email, String body, String subject, String eventType) {
-        try {
-            log.info("Sending verification email to: {}", email);
-            emailService.sendEmail(new SendNotificationEvent(email, subject, body, eventType));
-            log.info("Verification email sent successfully");
-        } catch (UnsupportedEncodingException e) {
-            log.error("Failed to send verification email: {}", e.getMessage());
-            throw new MailSendException(e.getMessage());
-        }
+
+        log.info("Sending verification email to: {}", email);
+        emailService.notify(new SendNotificationEvent(email, subject, body, eventType));
+        log.info("Verification email sent successfully");
+
     }
 
     private void validateEmailAndUsername(String email, String username) {
