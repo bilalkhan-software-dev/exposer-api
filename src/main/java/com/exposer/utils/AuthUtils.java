@@ -30,6 +30,7 @@ import static com.exposer.constants.AppConstants.AUTHORIZATION_HEADER_PREFIX;
 public class AuthUtils {
 
     private final UserDao userDao;
+
     @Value("${jwt.secret.key}")
     private String jwtSecretKey;
 
@@ -107,6 +108,11 @@ public class AuthUtils {
     public String getUsernameFromToken(String token) {
         Claims claims = this.extractClaimsFromToken(token);
         return claims.getSubject();
+    }
+
+    public String getUserIdFromToken(String token) {
+        Claims claims = this.extractClaimsFromToken(token);
+        return claims.get("id").toString();
     }
 
     public AuthProviderType getProviderTypeFromRegistrationId(String registrationId) {

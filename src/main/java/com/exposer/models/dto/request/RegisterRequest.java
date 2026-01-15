@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class RegisterRequest {
 
     @NotBlank(message = "Full name is required")

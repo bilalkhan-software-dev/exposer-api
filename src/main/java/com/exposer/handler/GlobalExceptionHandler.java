@@ -90,25 +90,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidTokenException(InvalidTokenException ex) {
         log.warn("Invalid Token Exception: {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
+        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(JwtExpiredException.class)
     public ResponseEntity<Map<String, Object>> handleJwtExpiredException(JwtExpiredException ex) {
         log.warn("Jwt Expired Exception: {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
+        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException ex) {
         log.warn("Authentication Exception: {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
+        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(OAuth2AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleOAuth2AuthenticationException(OAuth2AuthenticationException ex) {
         log.warn("OAuth2 Authentication Exception: {}", ex.getMessage());
-        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.CONFLICT);
+        return GenericResponseHandler.createErrorResponseMessage(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
