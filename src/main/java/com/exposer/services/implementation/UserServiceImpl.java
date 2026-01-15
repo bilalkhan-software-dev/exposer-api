@@ -2,9 +2,11 @@ package com.exposer.services.implementation;
 
 import com.exposer.dao.interfaces.UserDao;
 import com.exposer.exception.ResourceNotFoundException;
+import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.request.ProfileUpdateRequest;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.models.dto.response.UserResponse;
+import com.exposer.models.dto.response.admin.AdminUserResponse;
 import com.exposer.models.entity.User;
 import com.exposer.services.interfaces.UserService;
 import com.exposer.utils.AuthUtils;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -43,10 +46,11 @@ public class UserServiceImpl implements UserService {
                 () -> new ResourceNotFoundException("No user found with username: " + username)
         );
 
-        log.info("User details fetched successfully");
+        log.info("User details By Username fetched successfully");
         return UserMapper.toUserResponse(user);
     }
 
+    @Transactional
     @Override
     public UserResponse updateProfile(String token, ProfileUpdateRequest request) {
         log.info("Updating user profile");
@@ -77,12 +81,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PagedResponse<UserResponse> getUsers(int page, int size, boolean isNewest) {
+    public PagedResponse<AdminUserResponse> getUsers(PaginationRequest request) {
         log.info("Fetching all users");
-        Page<User> users = userDao.findByUsers(page, size, isNewest);
+        Page<User> users = userDao.findByUsers(request);
 
         log.info(users.getTotalElements() == 0 ? "No users available in our record" : "Users fetched successfully");
-        return CommonUtil.buildPagedResponse(users, UserMapper::toUserResponse);
+        return CommonUtil.buildPagedResponse(users, UserMapper::toAdminUserResponse);
+    }
+
+    @Override
+    public UserResponse getById(String id) {
+        log.info("Fetching user details by id");
+        User user = userDao.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("No user found")
+        );
+
+        log.info("User details by ID fetched successfully");
+        return UserMapper.toUserResponse(user);
     }
 
 

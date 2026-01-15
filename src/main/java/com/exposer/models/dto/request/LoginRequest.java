@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class LoginRequest {
 
     @NotBlank(message = "Username/Email is required")

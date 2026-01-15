@@ -38,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/oauth2/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/api/v1/public/**"
     );
 
     @Override
@@ -94,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.debug("No authorization header found or invalid format");
             }
         } catch (Exception e) {
-            log.error("JWT Authentication filter error: {}", e.getMessage(), e);
+            log.error("JWT Authentication filter error: {}", e.getMessage());
             GenericResponseHandler.jwtResponse(response, e);
             return;
         }

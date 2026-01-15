@@ -65,12 +65,21 @@ management:
       show-details: always
 
 admin:
+  create: ${CREATE_ADMIN:true}
   info:
     username: ${ADMIN_USERNAME}
     email: ${ADMIN_EMAIL}
     fullName: ${ADMIN_FULLNAME}
     password: ${ADMIN_PASSWORD}
 
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
 ---
 spring:
   config:
@@ -117,6 +126,7 @@ management:
       show-details: always
 
 admin:
+  create: ${CREATE_ADMIN}
   info:
     username: ${ADMIN_USERNAME}
     email: ${ADMIN_EMAIL}

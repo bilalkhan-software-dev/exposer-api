@@ -5,7 +5,6 @@ import com.exposer.models.entity.enums.AccountStatus;
 import com.exposer.models.entity.enums.AuthProviderType;
 import com.exposer.models.entity.enums.Auth_Role;
 import lombok.*;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,9 +24,6 @@ import java.util.UUID;
 @Builder
 @Document(collection = "users")
 public class User extends AbstractEntity implements UserDetails {
-
-    @Id
-    private String id;
 
     private String fullName;
 

@@ -1,5 +1,6 @@
 package com.exposer.utils;
 
+import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.response.PagedResponse;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -8,17 +9,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.exposer.constants.AppConstants.DEFAULT_TAGS;
 
 @UtilityClass
 public class CommonUtil {
 
-    public static String getVerificationLink(String baseUrl, String email, String verificationToken) {
+    public String getVerificationLink(String baseUrl, String email, String verificationToken) {
         return baseUrl + "/api/v1/auth/verify-email?email=" + email + "&token=" + verificationToken;
     }
 
-    public static String generateVerificationToken() {
+    public String generateVerificationToken() {
         return UUID.randomUUID().toString();
     }
 
@@ -29,7 +35,7 @@ public class CommonUtil {
      * @param mapper function to convert input elements to output type
      * @return transformed paged response with output elements
      */
-    public static <I, O> PagedResponse<O> buildPagedResponse(Page<@NonNull I> page, Function<I, O> mapper) {
+    public <I, O> PagedResponse<O> buildPagedResponse(Page<@NonNull I> page, Function<I, O> mapper) {
         return PagedResponse.<O>builder()
                 .content(page.getContent().stream()
                         .map(mapper)
@@ -43,9 +49,29 @@ public class CommonUtil {
                 .build();
     }
 
-    public static Pageable toBuildSortAndPage(final int page, final int size, final boolean isNewest) {
-        Sort sort = Sort.by(isNewest ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt");
-        return PageRequest.of(page, size, sort);
+    public Pageable toBuildSortAndPage(PaginationRequest request) {
+
+        PaginationRequest paginationRequest = PaginationRequest.builder()
+                .page(request.getPage())
+                .size(request.getSize())
+                .isNewest(request.isNewest())
+                .sortBy(request.getSortBy())
+                .build();
+
+        Sort sort = Sort.by(paginationRequest.isNewest() ? Sort.Direction.DESC : Sort.Direction.ASC, paginationRequest.getSortBy());
+        return PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize(), sort);
+    }
+
+    public Set<String> parseCommaSeparatedTags(String tagsHeader) {
+        if (tagsHeader == null || tagsHeader.trim().isEmpty()) {
+            return DEFAULT_TAGS;
+        }
+
+        return Arrays.stream(tagsHeader.split(","))
+                .map(String::trim)
+                .filter(tag -> !tag.isEmpty())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
     }
 
 

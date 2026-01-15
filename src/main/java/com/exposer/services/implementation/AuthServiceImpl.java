@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -45,7 +46,7 @@ class AuthServiceImpl implements AuthService {
     private String baseUrl;
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void registerUser(RegisterRequest request) {
         log.info("Starting user registration for email: {}", request.getEmail());
 
@@ -209,7 +210,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void resendEmailVerification(String email) {
         log.info("Resending email verification for email: {}", email);
 

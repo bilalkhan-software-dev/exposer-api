@@ -1,8 +1,10 @@
 package com.exposer.services.interfaces;
 
+import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.request.ProfileUpdateRequest;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.models.dto.response.UserResponse;
+import com.exposer.models.dto.response.admin.AdminUserResponse;
 
 public interface UserService {
 
@@ -14,6 +16,8 @@ public interface UserService {
 
     void deleteUser(String username);
 
-    PagedResponse<UserResponse> getUsers(int page, int size, boolean isNewest);
+    PagedResponse<AdminUserResponse> getUsers(PaginationRequest request);
+
+    UserResponse getById(String id);
 
 }

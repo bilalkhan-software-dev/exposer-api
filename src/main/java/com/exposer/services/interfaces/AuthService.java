@@ -9,7 +9,6 @@ import com.exposer.models.entity.enums.AccountStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
 public interface AuthService {

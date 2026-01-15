@@ -1,5 +1,6 @@
 package com.exposer.dao.interfaces;
 
+import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.entity.User;
 import org.springframework.data.domain.Page;
 
@@ -30,7 +31,7 @@ public interface UserDao {
 
     Optional<User> findByEmailAndVerificationToken(String email, String verificationToken);
 
-    Page<User> findByUsers(int page, int size, boolean isNewest);
+    Page<User> findByUsers(PaginationRequest request);
 
     void deleteByUsername(String username);
 

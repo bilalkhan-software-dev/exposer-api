@@ -2,6 +2,7 @@ package com.exposer.dao.implementation;
 
 import com.exposer.dao.interfaces.UserDao;
 import com.exposer.dao.repository.UserRepository;
+import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.entity.User;
 import com.exposer.utils.CommonUtil;
 import lombok.RequiredArgsConstructor;
@@ -82,9 +83,9 @@ class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Page<User> findByUsers(int page, int size, boolean isNewest) {
+    public Page<User> findByUsers(PaginationRequest request) {
 
-        Pageable pageable = CommonUtil.toBuildSortAndPage(page, size, isNewest);
+        Pageable pageable = CommonUtil.toBuildSortAndPage(request);
 
         return userRepository.findAll(pageable);
 

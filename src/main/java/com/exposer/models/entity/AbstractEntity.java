@@ -2,10 +2,8 @@ package com.exposer.models.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.Instant;
 
@@ -14,6 +12,10 @@ import java.time.Instant;
 @Setter
 public abstract class AbstractEntity {
 
+    @Id
+    @Indexed
+    private String id;
+
     @CreatedDate
     private Instant createdAt;
 
@@ -21,6 +23,7 @@ public abstract class AbstractEntity {
     private Instant updatedAt;
 
     @CreatedBy
+    @Indexed
     private String createdBy;
 
     @LastModifiedBy
