@@ -11,6 +11,25 @@ services:
       MONGO_INITDB_DATABASE: exposer-db
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - exposer-blog-service
+
+  redis:
+    image: redis:8.4
+    container_name: redis-exposer-caching
+    restart: "unless-stopped"
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - exposer-blog-service
 
 volumes:
   mongodb_data:
+  redis_data:
+
+networks:
+  exposer-blog-service:
+    driver: bridge
