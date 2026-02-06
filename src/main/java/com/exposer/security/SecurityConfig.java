@@ -1,7 +1,8 @@
 package com.exposer.security;
 
-import com.exposer.handler.GenericResponse;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.security.filter.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import tools.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -72,14 +71,13 @@ public class SecurityConfig {
                                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                     response.setCharacterEncoding(StandardCharsets.UTF_8);
                                     response.setContentType("application/json");
-                                    Object body = GenericResponse.builder()
+                                    Object body = ApiResponse.builder()
                                             .status("error")
                                             .httpStatus(HttpStatus.UNAUTHORIZED)
                                             .message("Need authentication. Please login to access the resources.")
                                             .data(authException.getMessage())
-                                            .build()
-                                            .create().getBody();
-                                    response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+                                            .build();
+                                    new ObjectMapper().writeValue(response.getOutputStream(), body);
                                 })
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                                     log.error("Access denied: {}", accessDeniedException.getMessage());

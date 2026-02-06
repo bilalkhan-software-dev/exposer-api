@@ -20,7 +20,7 @@ import java.time.Instant;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(value = "admin.create",havingValue = "true")
+@ConditionalOnProperty(value = "admin.init",havingValue = "true")
 public class AdminInitializer implements CommandLineRunner {
 
     private final UserDao userDao;

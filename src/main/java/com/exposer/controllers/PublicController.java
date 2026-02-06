@@ -1,6 +1,6 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.request.PostSearchRequest;
 import com.exposer.models.dto.request.PostSearchResult;
@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,12 +38,24 @@ public class PublicController {
             description = "Retrieves public profile information of a user by their ID"
     )
     @GetMapping("/user/{id}")
-    public ResponseEntity<Map<String, Object>> getUserDetails(
+    public ResponseEntity<ApiResponse<UserResponse>> getUserDetails(
 
             @NotBlank(message = "User ID is required") @PathVariable String id) {
 
         UserResponse response = userService.getById(id);
-        return GenericResponseHandler.createBuildResponse("Details retrieved successfully", response, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Details retrieved successfully", response, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get user details by Username",
+            description = "Retrieves public profile information of a user by their username"
+    )
+    @GetMapping("/user/{username}/")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserDetailsByUsername(
+            @NotBlank(message = "Username is required") @PathVariable String username) {
+
+        UserResponse response = userService.getByUsername(username);
+        return ResponseHandler.createBuildResponse("Details retrieved successfully", response, HttpStatus.OK);
     }
 
     @Operation(
@@ -52,11 +63,11 @@ public class PublicController {
             description = "Retrieves complete details of a post including content, author, and metadata"
     )
     @GetMapping("/post/{postId}")
-    ResponseEntity<Map<String, Object>> getPostById(
+    ResponseEntity<ApiResponse<PostResponse>> getPostById(
             @PathVariable String postId) {
 
         PostResponse posts = postService.postById(postId);
-        return GenericResponseHandler.createBuildResponse("Post details retrieved successfully", posts, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Post details retrieved successfully", posts, HttpStatus.OK);
     }
 
     @Operation(
@@ -64,7 +75,7 @@ public class PublicController {
             description = "Retrieves personalized post recommendations based on user interests"
     )
     @GetMapping("/post/recommendation")
-    ResponseEntity<Map<String, Object>> recommendedPost(
+    ResponseEntity<ApiResponse<PagedResponse<PostResponse>>> recommendedPost(
             @Parameter(
                     description = "Comma-separated tags of user interests",
                     example = "java,spring,programming",
@@ -81,14 +92,14 @@ public class PublicController {
         PagedResponse<PostResponse> recommendedPosts = postService.getRecommendedPost(tagsHeader, pagination);
 
         if (recommendedPosts.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse(
+            return ResponseHandler.createBuildResponse(
                     "No recommendations found. Try different interests.",
                     recommendedPosts,
                     HttpStatus.OK
             );
         }
 
-        return GenericResponseHandler.createBuildResponse("Recommended post retrieved successfully", recommendedPosts, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Recommended post retrieved successfully", recommendedPosts, HttpStatus.OK);
     }
 
     @Operation(
@@ -96,7 +107,7 @@ public class PublicController {
             description = "Search posts by keywords, tags, or other criteria"
     )
     @PostMapping("/post/search")
-    ResponseEntity<Map<String, Object>> searchPost(
+    ResponseEntity<ApiResponse<PagedResponse<PostSearchResult>>> searchPost(
             @Parameter(
                     description = "Search criteria and filters",
                     required = true,
@@ -113,14 +124,14 @@ public class PublicController {
         PagedResponse<PostSearchResult> searchResults = postService.search(searchRequest, paginationRequest);
 
         if (searchResults.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse(
+            return ResponseHandler.createBuildResponse(
                     "No post found. Try different keyword.",
                     searchResults,
                     HttpStatus.OK
             );
         }
 
-        return GenericResponseHandler.createBuildResponse("Search results for query: " + searchRequest.getQuery(), searchResults, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Search results for query: " + searchRequest.getQuery(), searchResults, HttpStatus.OK);
     }
 
     @Operation(
@@ -128,7 +139,7 @@ public class PublicController {
             description = "Retrieves all likes for a specific post or comment"
     )
     @GetMapping("/like/{targetId}")
-    ResponseEntity<Map<String, Object>> getMyLikes(
+    ResponseEntity<ApiResponse<PagedResponse<LikeResponse>>> getMyLikes(
             @PathVariable String targetId,
 
             @Parameter(
@@ -140,10 +151,10 @@ public class PublicController {
         PagedResponse<LikeResponse> likes = likeService.getLikesByTargetId(targetId, paginationRequest);
 
         if (likes.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("No likes found in the given id", likes, HttpStatus.OK);
+            return ResponseHandler.createBuildResponse("No likes found in the given id", likes, HttpStatus.OK);
         }
 
-        return GenericResponseHandler.createBuildResponse("Like retrieved successfully", likes, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Like retrieved successfully", likes, HttpStatus.OK);
     }
 
     @Operation(
@@ -151,7 +162,7 @@ public class PublicController {
             description = "Retrieves all comments for a specific post"
     )
     @GetMapping("/comments/{postId}")
-    ResponseEntity<Map<String, Object>> getCommentsOfThePost(
+    ResponseEntity<ApiResponse<PagedResponse<CommentResponse>>> getCommentsOfThePost(
             @PathVariable String postId,
 
             @Parameter(
@@ -163,10 +174,10 @@ public class PublicController {
         PagedResponse<CommentResponse> comments = commentService.getAllCommentsByPost(postId, paginationRequest);
 
         if (comments.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("No comments found in the given id", comments, HttpStatus.OK);
+            return ResponseHandler.createBuildResponse("No comments found in the given id", comments, HttpStatus.OK);
         }
 
-        return GenericResponseHandler.createBuildResponse("Comments retrieved successfully", comments, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comments retrieved successfully", comments, HttpStatus.OK);
     }
 
 
@@ -175,16 +186,16 @@ public class PublicController {
             description = "Retrieves all replies for a specific comment"
     )
     @GetMapping("/comments/{commentId}/replies")
-    ResponseEntity<Map<String, Object>> getRepliesOfTheComment(
+    ResponseEntity<ApiResponse<CommentResponse>> getRepliesOfTheComment(
             @PathVariable String commentId) {
 
         CommentResponse comments = commentService.getCommentWithReplies(commentId);
 
         if (comments.getReplies().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("No replies available", comments, HttpStatus.OK);
+            return ResponseHandler.createBuildResponse("No replies available", comments, HttpStatus.OK);
         }
 
-        return GenericResponseHandler.createBuildResponse("Comment replies retrieved successfully", comments, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comment replies retrieved successfully", comments, HttpStatus.OK);
     }
 
     @Operation(
@@ -192,7 +203,7 @@ public class PublicController {
             description = "Retrieves all replies for a specific comment with pagination support"
     )
     @GetMapping("/comments/replies/{commentId}")
-    ResponseEntity<Map<String, Object>> getRepliesOfTheCommentExceptParent(
+    ResponseEntity<ApiResponse<PagedResponse<CommentResponse>>> getRepliesOfTheCommentExceptParent(
             @PathVariable String commentId,
 
             @Parameter(description = "Pagination Parameters",
@@ -205,10 +216,10 @@ public class PublicController {
         PagedResponse<CommentResponse> repliesComments = commentService.getAllRepliesComments(commentId, paginationRequest);
 
         if (repliesComments.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("No replies available", repliesComments, HttpStatus.OK);
+            return ResponseHandler.createBuildResponse("No replies available", repliesComments, HttpStatus.OK);
         }
 
-        return GenericResponseHandler.createBuildResponse("Comment replies retrieved successfully", repliesComments, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comment replies retrieved successfully", repliesComments, HttpStatus.OK);
     }
 
 

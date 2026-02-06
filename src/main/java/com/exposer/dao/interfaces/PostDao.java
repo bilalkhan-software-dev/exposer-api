@@ -2,6 +2,9 @@ package com.exposer.dao.interfaces;
 
 import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.request.PostSearchRequest;
+import com.exposer.models.dto.response.PagedResponse;
+import com.exposer.models.dto.response.PostResponse;
+import com.exposer.models.dto.response.admin.AdminPostResponse;
 import com.exposer.models.entity.Post;
 import org.springframework.data.domain.Page;
 
@@ -18,9 +21,9 @@ public interface PostDao {
 
     Post save(Post t);
 
-    Page<Post> findAll(PaginationRequest request);
+    PagedResponse<AdminPostResponse> findAll(PaginationRequest request);
 
-    Page<Post> findByUser(String id, PaginationRequest request);
+    PagedResponse<PostResponse> findByUser(String id, PaginationRequest request);
 
     Page<Post> search(PostSearchRequest searchRequest, PaginationRequest paginationRequest);
 

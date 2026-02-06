@@ -1,7 +1,8 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.*;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.models.dto.response.PostResponse;
 import com.exposer.models.dto.response.admin.AdminPostResponse;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 import static com.exposer.constants.AppConstants.AUTHORIZATION_HEADER;
 import static com.exposer.constants.AppConstants.ONLY_ADMIN;
@@ -36,7 +36,7 @@ public class PostController {
             description = "Creates and publishes a new post. Requires authentication."
     )
     @PostMapping
-    ResponseEntity<Map<String, Object>> publishPost(
+    ResponseEntity<ApiResponse<PostResponse>> publishPost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -53,7 +53,7 @@ public class PostController {
             @Valid @RequestBody CreatePostRequest request) {
 
         PostResponse post = postService.addPost(token, request);
-        return GenericResponseHandler.createBuildResponse("Post published successfully", post, HttpStatus.CREATED);
+        return ResponseHandler.createBuildResponse("Post published successfully", post, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -61,7 +61,7 @@ public class PostController {
             description = "Updates the content of an existing post. Only the post author can edit their post."
     )
     @PatchMapping("/{postId}")
-    ResponseEntity<Map<String, Object>> editPost(
+    ResponseEntity<ApiResponse<PostResponse>> editPost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -84,7 +84,7 @@ public class PostController {
             @Valid @RequestBody EditPostRequest request) {
 
         PostResponse post = postService.editPost(token, postId, request);
-        return GenericResponseHandler.createBuildResponse("Post edited successfully", post, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Post edited successfully", post, HttpStatus.OK);
     }
 
     @Operation(
@@ -92,7 +92,7 @@ public class PostController {
             description = "Updates the status of a post (e.g., DRAFT, PUBLISHED, ARCHIVED)."
     )
     @PatchMapping()
-    ResponseEntity<Map<String, Object>> updatePostStatus(
+    ResponseEntity<ApiResponse<PostResponse>> updatePostStatus(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -109,7 +109,7 @@ public class PostController {
             @Valid @RequestBody UpdatePostStatusRequest request) {
 
         PostResponse post = postService.updatePostStatus(token, request);
-        return GenericResponseHandler.createBuildResponse("Post updated successfully", post, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Post updated successfully", post, HttpStatus.OK);
     }
 
     @Operation(
@@ -118,7 +118,7 @@ public class PostController {
     )
     @DeleteMapping("/{postId}")
     @PreAuthorize(ONLY_ADMIN)
-    ResponseEntity<Map<String, Object>> deletePost(
+    ResponseEntity<ApiResponse<Void>> deletePost(
             @Parameter(
                     description = "ID of the post to delete",
                     required = true
@@ -126,7 +126,7 @@ public class PostController {
             @PathVariable String postId) {
 
         postService.deletePostById(postId);
-        return GenericResponseHandler.createBuildResponseMessage("Post permanently deleted successfully", HttpStatus.OK);
+        return ResponseHandler.createBuildResponseMessage("Post permanently deleted successfully", HttpStatus.OK);
     }
 
     @Operation(
@@ -135,7 +135,7 @@ public class PostController {
     )
     @GetMapping()
     @PreAuthorize(ONLY_ADMIN)
-    ResponseEntity<Map<String, Object>> getAllPostForAdmin(
+    ResponseEntity<ApiResponse<PagedResponse<AdminPostResponse>>> getAllPostForAdmin(
             @Parameter(
                     description = "Pagination parameters",
                     schema = @Schema(implementation = PaginationRequest.class)
@@ -145,10 +145,10 @@ public class PostController {
         PagedResponse<AdminPostResponse> posts = postService.getAllPosts(paginationRequest);
 
         if (posts.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("Post not found.", posts, HttpStatus.NOT_FOUND);
+            return ResponseHandler.createBuildResponse("Post not found.", posts, HttpStatus.NOT_FOUND);
         }
 
-        return GenericResponseHandler.createBuildResponse("Posts retrieved successfully", posts, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Posts retrieved successfully", posts, HttpStatus.OK);
     }
 
     @Operation(
@@ -156,7 +156,7 @@ public class PostController {
             description = "Retrieves a paginated list of posts created by the currently authenticated user."
     )
     @GetMapping("/")
-    ResponseEntity<Map<String, Object>> getMyPost(
+    ResponseEntity<ApiResponse<PagedResponse<PostResponse>>> getMyPost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -174,9 +174,9 @@ public class PostController {
         PagedResponse<PostResponse> posts = postService.myPost(token, paginationRequest);
 
         if (posts.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("Post not found.", posts, HttpStatus.NOT_FOUND);
+            return ResponseHandler.createBuildResponse("Post not found.", posts, HttpStatus.NOT_FOUND);
         }
 
-        return GenericResponseHandler.createBuildResponse("Posts retrieved successfully", posts, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Posts retrieved successfully", posts, HttpStatus.OK);
     }
 }
