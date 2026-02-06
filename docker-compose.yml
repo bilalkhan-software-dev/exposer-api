@@ -11,6 +11,7 @@ services:
       MONGO_INITDB_DATABASE: exposer-db
     volumes:
       - mongodb_data:/data/db
+#      - ./volumes/mongodb_data:/data/db  # best for local development
     networks:
       - exposer-blog-service
 
@@ -23,12 +24,26 @@ services:
     command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redis_data:/data
+    #      - ./volumes/redis_data:/data    # best for local development
+    networks:
+      - exposer-blog-service
+
+  redis-insight:
+    image: redis/redisinsight:3.0.2
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    restart: always
+    volumes:
+      - redis-insight:/data
+    #      - ./volumes/redis-insight:/data  # best for local development
     networks:
       - exposer-blog-service
 
 volumes:
   mongodb_data:
   redis_data:
+  redis-insight:
 
 networks:
   exposer-blog-service:

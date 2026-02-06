@@ -1,6 +1,6 @@
 package com.exposer.security.filter;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.security.CustomUserDetailService;
 import com.exposer.utils.AuthUtils;
 import jakarta.servlet.FilterChain;
@@ -96,7 +96,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.error("JWT Authentication filter error: {}", e.getMessage());
-            GenericResponseHandler.jwtResponse(response, e);
+            ResponseHandler.jwtResponse(response, e);
             return;
         }
 

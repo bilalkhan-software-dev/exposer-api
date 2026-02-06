@@ -1,8 +1,9 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.CreateLikeRequest;
 import com.exposer.models.dto.request.PaginationRequest;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.models.dto.response.LikeResponse;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.services.interfaces.LikeService;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 import static com.exposer.constants.AppConstants.AUTHORIZATION_HEADER;
 import static com.exposer.constants.AppConstants.ONLY_ADMIN;
@@ -36,7 +36,7 @@ public class LikeController {
             description = "Creates a like on a post or comment. If the user has already liked the target, this may toggle the like status."
     )
     @PostMapping
-    ResponseEntity<Map<String, Object>> saveLike(
+    ResponseEntity<ApiResponse<LikeResponse>> saveLike(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -53,7 +53,7 @@ public class LikeController {
             @Valid @RequestBody CreateLikeRequest request) {
 
         LikeResponse like = likeService.createLike(token, request);
-        return GenericResponseHandler.createBuildResponse("Like saved successfully", like, HttpStatus.CREATED);
+        return ResponseHandler.createBuildResponse("Like saved successfully", like, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -61,7 +61,7 @@ public class LikeController {
             description = "Removes/unlikes a specific like by its ID. Only the user who created the like can remove it."
     )
     @DeleteMapping("/{likeId}")
-    ResponseEntity<Map<String, Object>> removeLike(
+    ResponseEntity<ApiResponse<LikeResponse>> removeLike(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -77,7 +77,7 @@ public class LikeController {
             @PathVariable String likeId) {
 
         likeService.deleteLike(token, likeId);
-        return GenericResponseHandler.createBuildResponseMessage("Like removed successfully", HttpStatus.OK);
+        return ResponseHandler.createBuildResponseMessage("Like removed successfully", HttpStatus.OK);
     }
 
     @Operation(
@@ -85,7 +85,7 @@ public class LikeController {
             description = "Retrieves a paginated list of likes created by the currently authenticated user."
     )
     @GetMapping("/")
-    ResponseEntity<Map<String, Object>> getMyLikes(
+    ResponseEntity<ApiResponse<PagedResponse<LikeResponse>>> getMyLikes(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -103,10 +103,10 @@ public class LikeController {
         PagedResponse<LikeResponse> myLikes = likeService.getMyLikes(token, paginationRequest);
 
         if (myLikes.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("You currently do not have any likes", myLikes, HttpStatus.NO_CONTENT);
+            return ResponseHandler.createBuildResponse("You currently do not have any likes", myLikes, HttpStatus.NO_CONTENT);
         }
 
-        return GenericResponseHandler.createBuildResponse("Likes retrieved successfully", myLikes, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Likes retrieved successfully", myLikes, HttpStatus.OK);
     }
 
     @Operation(
@@ -115,7 +115,7 @@ public class LikeController {
     )
     @GetMapping()
     @PreAuthorize(ONLY_ADMIN)
-    ResponseEntity<Map<String, Object>> getLikes(
+    ResponseEntity<ApiResponse<PagedResponse<LikeResponse>>> getLikes(
             @Parameter(
                     description = "Pagination parameters",
                     schema = @Schema(implementation = PaginationRequest.class)
@@ -125,9 +125,9 @@ public class LikeController {
         PagedResponse<LikeResponse> likes = likeService.getLikes(paginationRequest);
 
         if (likes.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("Currently no likes available", likes, HttpStatus.NO_CONTENT);
+            return ResponseHandler.createBuildResponse("Currently no likes available", likes, HttpStatus.NO_CONTENT);
         }
 
-        return GenericResponseHandler.createBuildResponse("Likes retrieved successfully", likes, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Likes retrieved successfully", likes, HttpStatus.OK);
     }
 }

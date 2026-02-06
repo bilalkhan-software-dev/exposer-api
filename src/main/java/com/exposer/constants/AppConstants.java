@@ -12,13 +12,14 @@ public final class AppConstants {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
-    private static final Long JWT_EXPIRATION_TIME = TimeUnit.DAYS.toMillis(4);
 
-    public static final String ONLY_ADMIN = "hasRole('ADMIN')";
+    private static final Long JWT_EXPIRATION_TIME = TimeUnit.DAYS.toMillis(4);
 
     public static Date getJwtExpirationDate() {
         return new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME);
     }
+
+    public static final String ONLY_ADMIN = "hasRole('ADMIN')";
 
     public static final Set<String> DEFAULT_TAGS = Set.of(
             "technical", "music", "education", "motivation", "java",

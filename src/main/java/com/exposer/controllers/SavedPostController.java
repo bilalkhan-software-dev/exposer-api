@@ -1,8 +1,9 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.PaginationRequest;
 import com.exposer.models.dto.request.SavedPostRequest;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.models.dto.response.SavedPostResponse;
 import com.exposer.services.interfaces.SavedPostService;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 import static com.exposer.constants.AppConstants.AUTHORIZATION_HEADER;
 import static com.exposer.constants.AppConstants.ONLY_ADMIN;
@@ -36,7 +36,7 @@ public class SavedPostController {
             description = "Adds a post to the user's saved posts/bookmarks for later reading."
     )
     @PostMapping
-    ResponseEntity<Map<String, Object>> savePost(
+    ResponseEntity<ApiResponse<SavedPostResponse>> savePost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -53,7 +53,7 @@ public class SavedPostController {
             @Valid @RequestBody SavedPostRequest request) {
 
         SavedPostResponse post = savedPostService.savePost(token, request);
-        return GenericResponseHandler.createBuildResponse("Post saved successfully", post, HttpStatus.CREATED);
+        return ResponseHandler.createBuildResponse("Post saved successfully", post, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -61,7 +61,7 @@ public class SavedPostController {
             description = "Removes a post from the user's saved posts/bookmarks."
     )
     @DeleteMapping("/{savedPostId}")
-    ResponseEntity<Map<String, Object>> removeSavedPost(
+    ResponseEntity<ApiResponse<Void>> removeSavedPost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -77,7 +77,7 @@ public class SavedPostController {
             @PathVariable String savedPostId) {
 
         savedPostService.removeSavedPost(token, savedPostId);
-        return GenericResponseHandler.createBuildResponseMessage(
+        return ResponseHandler.createBuildResponseMessage(
                 "Post removed successfully from saved post history",
                 HttpStatus.OK
         );
@@ -89,7 +89,7 @@ public class SavedPostController {
     )
     @GetMapping()
     @PreAuthorize(ONLY_ADMIN)
-    ResponseEntity<Map<String, Object>> getAllSavedPost(
+    ResponseEntity<ApiResponse<PagedResponse<SavedPostResponse>>> getAllSavedPost(
             @Parameter(
                     description = "Pagination parameters",
                     schema = @Schema(implementation = PaginationRequest.class)
@@ -98,14 +98,14 @@ public class SavedPostController {
 
         PagedResponse<SavedPostResponse> allSavedPosts = savedPostService.getAllSavedPosts(request);
         if (allSavedPosts.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse(
+            return ResponseHandler.createBuildResponse(
                     "No saved posts available",
                     allSavedPosts,
                     HttpStatus.NO_CONTENT
             );
         }
 
-        return GenericResponseHandler.createBuildResponse(
+        return ResponseHandler.createBuildResponse(
                 "Saved Posts retrieved successfully",
                 allSavedPosts,
                 HttpStatus.OK
@@ -117,7 +117,7 @@ public class SavedPostController {
             description = "Retrieves a paginated list of posts saved/bookmarked by the currently authenticated user."
     )
     @GetMapping("/my")
-    ResponseEntity<Map<String, Object>> getMySavedPost(
+    ResponseEntity<ApiResponse<PagedResponse<SavedPostResponse>>> getMySavedPost(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -134,14 +134,14 @@ public class SavedPostController {
 
         PagedResponse<SavedPostResponse> allSavedPosts = savedPostService.mySavedPost(token, request);
         if (allSavedPosts.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse(
+            return ResponseHandler.createBuildResponse(
                     "You currently don't have any saved posts available",
                     allSavedPosts,
                     HttpStatus.NO_CONTENT
             );
         }
 
-        return GenericResponseHandler.createBuildResponse(
+        return ResponseHandler.createBuildResponse(
                 "Your Saved Posts retrieved successfully",
                 allSavedPosts,
                 HttpStatus.OK

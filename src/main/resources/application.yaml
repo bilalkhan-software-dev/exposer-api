@@ -30,6 +30,11 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
+    redis:
+      repositories:
+        enabled: false
+      host: localhost
+      port: 6379
   mongodb:
     uri: ${MONGODB_URL:mongodb://admin:password123@localhost:27017/exposer-db?authSource=admin}
   mail:
@@ -40,10 +45,6 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-  cache:
-    type: caffeine
-    caffeine:
-      spec: maximumSize=500,expireAfterWrite=1h
   security:
     oauth2:
       client:
@@ -65,7 +66,7 @@ management:
       show-details: always
 
 admin:
-  create: ${CREATE_ADMIN:true}
+  init: ${CREATE_ADMIN:true}
   info:
     username: ${ADMIN_USERNAME}
     email: ${ADMIN_EMAIL}
@@ -88,6 +89,9 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_CLIENT}
   mongodb:
     uri: ${MONGODB_URL}
   mail:
@@ -109,12 +113,6 @@ spring:
               - email
               - profile
             redirect-uri: "${api.base.url}/login/oauth2/code/google"
-
-  cache:
-    type: caffeine
-    caffeine:
-      spec: maximumSize=500,expireAfterWrite=1h
-
 management:
   endpoints:
     web:
@@ -126,7 +124,7 @@ management:
       show-details: always
 
 admin:
-  create: ${CREATE_ADMIN}
+  init: ${CREATE_ADMIN}
   info:
     username: ${ADMIN_USERNAME}
     email: ${ADMIN_EMAIL}

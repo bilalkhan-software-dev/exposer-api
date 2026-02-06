@@ -1,9 +1,10 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.CommentRequest;
 import com.exposer.models.dto.request.EditCommentRequest;
 import com.exposer.models.dto.request.PaginationRequest;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.models.dto.response.CommentResponse;
 import com.exposer.models.dto.response.PagedResponse;
 import com.exposer.services.interfaces.CommentService;
@@ -19,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 import static com.exposer.constants.AppConstants.AUTHORIZATION_HEADER;
 import static com.exposer.constants.AppConstants.ONLY_ADMIN;
@@ -37,7 +37,7 @@ public class CommentController {
             description = "Creates a new comment on a post. Requires authentication."
     )
     @PostMapping
-    ResponseEntity<Map<String, Object>> createComment(
+    ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -54,7 +54,7 @@ public class CommentController {
             @Valid @RequestBody CommentRequest request) {
 
         CommentResponse comment = commentService.addComment(token, request);
-        return GenericResponseHandler.createBuildResponse("Comment saved successfully", comment, HttpStatus.CREATED);
+        return ResponseHandler.createBuildResponse("Comment saved successfully", comment, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -62,7 +62,7 @@ public class CommentController {
             description = "Creates a reply to an existing comment. Requires authentication."
     )
     @PostMapping("/reply/{commentId}")
-    ResponseEntity<Map<String, Object>> replyComment(
+    ResponseEntity<ApiResponse<CommentResponse>> replyComment(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -85,7 +85,7 @@ public class CommentController {
             @Valid @RequestBody CommentRequest request) {
 
         CommentResponse comment = commentService.replyComment(token, commentId, request);
-        return GenericResponseHandler.createBuildResponse("Reply saved successfully", comment, HttpStatus.CREATED);
+        return ResponseHandler.createBuildResponse("Reply saved successfully", comment, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -93,7 +93,7 @@ public class CommentController {
             description = "Updates the content of an existing comment. Only the comment author can edit their comment."
     )
     @PatchMapping("/{commentId}")
-    ResponseEntity<Map<String, Object>> editComment(
+    ResponseEntity<ApiResponse<CommentResponse>> editComment(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -116,7 +116,7 @@ public class CommentController {
             @Valid @RequestBody EditCommentRequest request) {
 
         CommentResponse comment = commentService.editComment(token, commentId, request);
-        return GenericResponseHandler.createBuildResponse("Comment edited successfully", comment, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comment edited successfully", comment, HttpStatus.OK);
     }
 
     @Operation(
@@ -124,7 +124,7 @@ public class CommentController {
             description = "Performs a soft delete on a comment. The comment is marked as deleted but remains in the database. Only the comment author or admin can delete a comment."
     )
     @DeleteMapping("/{commentId}")
-    ResponseEntity<Map<String, Object>> removeComment(
+    ResponseEntity<ApiResponse<Void>> removeComment(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -140,7 +140,7 @@ public class CommentController {
             @PathVariable String commentId) {
 
         commentService.deleteComment(token, commentId);
-        return GenericResponseHandler.createBuildResponseMessage("Your comment softly removed successfully", HttpStatus.OK);
+        return ResponseHandler.createBuildResponseMessage("Your comment softly removed successfully", HttpStatus.OK);
     }
 
     @Operation(
@@ -148,7 +148,7 @@ public class CommentController {
             description = "Retrieves a paginated list of comments made by the currently authenticated user."
     )
     @GetMapping("/")
-    ResponseEntity<Map<String, Object>> getMyComments(
+    ResponseEntity<ApiResponse<PagedResponse<CommentResponse>>> getMyComments(
             @Parameter(
                     description = "Bearer token for authentication",
                     required = true,
@@ -166,10 +166,10 @@ public class CommentController {
         PagedResponse<CommentResponse> myComments = commentService.getAllCommentByUser(token, paginationRequest);
 
         if (myComments.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("You currently does not have comments", myComments, HttpStatus.NO_CONTENT);
+            return ResponseHandler.createBuildResponse("You currently does not have comments", myComments, HttpStatus.NO_CONTENT);
         }
 
-        return GenericResponseHandler.createBuildResponse("Comments retrieved successfully", myComments, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comments retrieved successfully", myComments, HttpStatus.OK);
     }
 
     @Operation(
@@ -178,7 +178,7 @@ public class CommentController {
     )
     @GetMapping()
     @PreAuthorize(ONLY_ADMIN)
-    ResponseEntity<Map<String, Object>> getComments(
+    ResponseEntity<ApiResponse<PagedResponse<CommentResponse>>> getComments(
             @Parameter(
                     description = "Pagination parameters",
                     schema = @Schema(implementation = PaginationRequest.class)
@@ -188,9 +188,9 @@ public class CommentController {
         PagedResponse<CommentResponse> comments = commentService.getAllComments(paginationRequest);
 
         if (comments.getContent().isEmpty()) {
-            return GenericResponseHandler.createBuildResponse("Currently no comments available", comments, HttpStatus.NO_CONTENT);
+            return ResponseHandler.createBuildResponse("Currently no comments available", comments, HttpStatus.NO_CONTENT);
         }
 
-        return GenericResponseHandler.createBuildResponse("Comments retrieved successfully", comments, HttpStatus.OK);
+        return ResponseHandler.createBuildResponse("Comments retrieved successfully", comments, HttpStatus.OK);
     }
 }

@@ -125,7 +125,7 @@ class PostServiceImpl implements PostService {
 
         log.debug("Authority validation passed for status update on post: {}", postId);
 
-        if (post.isActive() == request.getStatus()) {
+        if (request.getStatus() == null || post.isActive() == request.getStatus()) {
             log.info("Post status unchanged. Current and requested status are the same: {}",
                     post.isActive());
             return PostMapper.toPostResponse(postDao.save(post));
@@ -148,14 +148,14 @@ class PostServiceImpl implements PostService {
                 paginationRequest.getSize(),
                 paginationRequest.getSortBy());
 
-        Page<Post> page = postDao.findAll(paginationRequest);
+        PagedResponse<AdminPostResponse> page = postDao.findAll(paginationRequest);
 
         log.info("Retrieved {} posts (total: {}, pages: {}, current page: {})",
-                page.getNumberOfElements(),
+                page.getTotalElements(),
                 page.getTotalElements(),
                 page.getTotalPages(),
-                page.getNumber());
-        return CommonUtil.buildPagedResponse(page, PostMapper::toAdminPostResponse);
+                page.getPageNumber());
+        return page;
     }
 
     @Override
@@ -166,16 +166,16 @@ class PostServiceImpl implements PostService {
         User user = authUtils.getUserFromToken(token);
         log.debug("Retrieved user from token. User ID: {}", user.getId());
 
-        Page<Post> page = postDao.findByUser(user.getId(), request);
+        PagedResponse<PostResponse> page = postDao.findByUser(user.getId(), request);
 
         log.info("Retrieved {} posts for user {} (total: {}, pages: {}, current page: {})",
-                page.getNumberOfElements(),
+                page.getTotalElements(),
                 user.getId(),
                 page.getTotalElements(),
                 page.getTotalPages(),
-                page.getNumber());
+                page.getPageNumber());
 
-        return CommonUtil.buildPagedResponse(page, PostMapper::toPostResponse);
+        return page;
 
     }
 

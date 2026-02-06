@@ -82,10 +82,10 @@ public class AuthUtils {
                     .getPayload();
 
         } catch (ExpiredJwtException e) {
-            log.info("Token expired: {} msg: {}", token, e.getMessage());
+            log.info("Token expired: ***** msg: {}", e.getMessage());
             throw new JwtExpiredException("Token is expired");
         } catch (JwtException e) {
-            log.info("Invalid token: {} msg: {}", token, e.getMessage());
+            log.info("Invalid token: ***** msg: {}", e.getMessage());
             throw new InvalidTokenException("Your Access Token is not valid");
         } catch (Exception e) {
             log.error("Exception occurred while trying to extract the claims from the token \n Details: {}", e.getMessage());
@@ -143,7 +143,7 @@ public class AuthUtils {
     }
 
     public User getUserFromToken(String jwt) {
-        log.info("Getting user from token: {}", jwt);
+        log.info("Getting user from token: ****");
 
         String username = getUsernameFromToken(jwt);
         log.info("Extracted username: {}", username);

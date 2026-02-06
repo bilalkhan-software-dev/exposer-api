@@ -1,8 +1,9 @@
 package com.exposer.controllers;
 
-import com.exposer.handler.GenericResponseHandler;
+import com.exposer.handler.ResponseHandler;
 import com.exposer.models.dto.request.LoginRequest;
 import com.exposer.models.dto.request.RegisterRequest;
+import com.exposer.models.dto.response.ApiResponse;
 import com.exposer.models.dto.response.AuthResponse;
 import com.exposer.services.interfaces.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class AuthController {
             description = "Registers a new user account. After registration, a verification email will be sent to the provided email address."
     )
     @PostMapping("/register")
-    ResponseEntity<Map<String, Object>> register(
+    ResponseEntity<ApiResponse<Void>> register(
             @Parameter(
                     description = "User registration details",
                     required = true,
@@ -39,7 +39,7 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest registerRequest) {
 
         authService.registerUser(registerRequest);
-        return GenericResponseHandler.createBuildResponseMessage(
+        return ResponseHandler.createBuildResponseMessage(
                 "Registration successful. Please check your email for verification instructions.",
                 HttpStatus.CREATED
         );
@@ -50,7 +50,7 @@ public class AuthController {
             description = "Authenticates a user and returns JWT tokens for subsequent API calls."
     )
     @PostMapping("/login")
-    ResponseEntity<Map<String, Object>> login(
+    ResponseEntity<ApiResponse<AuthResponse>> login(
             @Parameter(
                     description = "User login credentials",
                     required = true,
@@ -59,7 +59,7 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request) {
 
         AuthResponse response = authService.login(request);
-        return GenericResponseHandler.createBuildResponse(
+        return ResponseHandler.createBuildResponse(
                 "Login successful",
                 response,
                 HttpStatus.OK
@@ -71,7 +71,7 @@ public class AuthController {
             description = "Verifies a user's email address using the token sent to their email."
     )
     @GetMapping("/verify-email")
-    ResponseEntity<Map<String, Object>> verifyEmail(
+    ResponseEntity<ApiResponse<Void>> verifyEmail(
             @Parameter(
                     description = "Email address to verify",
                     required = true,
@@ -86,7 +86,7 @@ public class AuthController {
             @RequestParam("token") String verificationToken) {
 
         authService.verifyEmail(email, verificationToken);
-        return GenericResponseHandler.createBuildResponseMessage(
+        return ResponseHandler.createBuildResponseMessage(
                 "Email verified successfully. Your account is now active.",
                 HttpStatus.OK
         );
@@ -97,7 +97,7 @@ public class AuthController {
             description = "Resends the email verification link to the user's email address."
     )
     @PostMapping("/resend-verification")
-    ResponseEntity<Map<String, Object>> resendVerificationEmail(
+    ResponseEntity<ApiResponse<Void>> resendVerificationEmail(
             @Parameter(
                     description = "Email address to resend verification",
                     required = true,
@@ -106,7 +106,7 @@ public class AuthController {
             @RequestParam String email) {
 
         authService.resendEmailVerification(email);
-        return GenericResponseHandler.createBuildResponseMessage(
+        return ResponseHandler.createBuildResponseMessage(
                 "Verification email resent successfully. Please check your inbox.",
                 HttpStatus.OK
         );

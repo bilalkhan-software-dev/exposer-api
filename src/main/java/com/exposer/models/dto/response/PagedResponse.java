@@ -14,8 +14,9 @@ public class PagedResponse<T> {
 
     private List<T> content;
     private long totalElements;
-    private boolean isFirst;
-    private boolean isLast;
+
+    private Boolean isFirst;
+    private Boolean isLast;
     private int pageNumber;
     private int pageSize;
     private long totalPages;

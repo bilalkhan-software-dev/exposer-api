@@ -20,7 +20,7 @@ public class PaginationRequest {
     private int size = 20;
 
     @Builder.Default
-    private boolean isNewest = true;
+    private Boolean isNewest = true;
 
     @Builder.Default
     private String sortBy = "createdAt";

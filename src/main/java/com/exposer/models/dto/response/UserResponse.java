@@ -2,7 +2,6 @@ package com.exposer.models.dto.response;
 
 
 import com.exposer.models.entity.enums.AccountStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -13,7 +12,6 @@ import java.time.Instant;
 @Getter
 @Setter
 @SuperBuilder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserResponse {
 
     private String username;

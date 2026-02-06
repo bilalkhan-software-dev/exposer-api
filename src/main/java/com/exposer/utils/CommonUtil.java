@@ -21,7 +21,8 @@ import static com.exposer.constants.AppConstants.DEFAULT_TAGS;
 public class CommonUtil {
 
     public String getVerificationLink(String baseUrl, String email, String verificationToken) {
-        return baseUrl + "/api/v1/auth/verify-email?email=" + email + "&token=" + verificationToken;
+        return String.format("%s/api/v1/auth/verify-email?email=%s&token=%s",
+                baseUrl, email, verificationToken);
     }
 
     public String generateVerificationToken() {
@@ -54,11 +55,11 @@ public class CommonUtil {
         PaginationRequest paginationRequest = PaginationRequest.builder()
                 .page(request.getPage())
                 .size(request.getSize())
-                .isNewest(request.isNewest())
+                .isNewest(request.getIsNewest())
                 .sortBy(request.getSortBy())
                 .build();
 
-        Sort sort = Sort.by(paginationRequest.isNewest() ? Sort.Direction.DESC : Sort.Direction.ASC, paginationRequest.getSortBy());
+        Sort sort = Sort.by(Boolean.TRUE.equals(paginationRequest.getIsNewest()) ? Sort.Direction.DESC : Sort.Direction.ASC, paginationRequest.getSortBy());
         return PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize(), sort);
     }
 
